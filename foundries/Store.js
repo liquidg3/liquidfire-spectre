@@ -27,8 +27,8 @@ define(['altair/facades/declare',
                 }
 
                 var _options = mixin({
-                    database: this.nexus('cartridges/Database'),
-                    tableName: schema.tableName,
+                    database:   this.nexus('cartridges/Database'),
+                    schema:     this.nexus('cartridges/Apollo').createSchema(schema),
                     entityPath: path
                 }, options || {});
 
