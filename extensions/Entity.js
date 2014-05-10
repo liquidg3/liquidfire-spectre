@@ -20,14 +20,18 @@ define(['altair/facades/declare',
                     throw new Error('You must pass your extension the Extension cartridge');
                 }
 
-                this.cartridge  = cartridge;
-                this.altair     = altair || cartridge.altair;
                 this._foundry   = foundry;
 
                 if(!this.name) {
                     throw new Error('You must define a .name for your extension.');
                 }
             },
+
+            /**
+             * Our "entity" method actually returns a store with find, create, etc.
+             * @param Module
+             * @returns {*}
+             */
 
             extend: function (Module) {
 
@@ -41,6 +45,7 @@ define(['altair/facades/declare',
                             _p = this.resolvePath(pathUtil.resolve(base, named.toLowerCase(), named)),
                             spectre = this.nexus('liquidfire:Spectre'),
                             d,
+                            _options = options || {},
                             _c = mixin({
                                 type: 'entity-store'
                             }, config || {});
@@ -51,10 +56,14 @@ define(['altair/facades/declare',
                             d.resolve(spectre.cachedStore(named));
 
                         } else {
-                            d = foundry.forge(_p, options, _c).then(function (store) {
+
+                            _options.entityName = this.name.split('/')[0] + '/entities/' + named;
+
+                            d = foundry.forge(_p, _options, _c).then(function (store) {
                                 spectre.cacheStore(named, store);
                                 return store;
                             });
+
                         }
 
                         return d;

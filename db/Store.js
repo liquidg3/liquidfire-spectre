@@ -1,11 +1,15 @@
 define(['altair/facades/declare',
+        'altair/facades/all',
+        'altair/mixins/_DeferredMixin',
         'lodash'
 ], function (declare,
+             all,
+             _DeferredMixin,
             _) {
 
     var delegateMethods = ['find', 'findOne', 'delete', 'update', 'count'],
         extension       = {},
-        Store = declare(null, {
+        Store = declare([_DeferredMixin], {
 
 
             _tableName:     '',
@@ -20,40 +24,86 @@ define(['altair/facades/declare',
                 this._entitySchema  = options.schema;
                 this._tableName     = this._entitySchema.option('tableName');
                 this._entityPath    = options.entityPath;
-                this._entityName    = this._entitySchema.option('name') || this._entityPath.split('/').pop(); //default entity name (if no "name" is specified in schema)
+                this._entityName    = options.entityName || this._entityPath.split('/').pop(); //default entity name (if no "name" is specified in schema)
 
             },
 
-            entityName: function () {
+            name: function () {
                 return this._entityName;
             },
 
-            entitySchema: function () {
+            schema: function () {
                 return this._entitySchema;
             },
 
-            create: function (values) {
-                return this.parent.forge(this._entityPath, values, {
-                    foundry: this.hitch(this, 'forgeEntity')
+            /**
+             * Save an entity back to the database
+             *
+             * @param entity
+             */
+            save: function (entity, options) {
+
+                return all(entity.getValues({}, { methods: ['toDatabaseValue'] })).then(this.hitch(function (values) {
+
+                    //does this entity have a primary key?
+                    if(entity.primaryValue()) {
+
+                        //if so, update
+                        return this._database.update(this._tableName).set(values).where(entity.primaryProperty().name, '===', entity.primaryValue()).execute(options);
+
+                    }
+                    //otherwise lets create
+                    else {
+
+                        //lets not pass a primary key field to the database
+                        delete values[entity.primaryProperty().name];
+
+                        //create record
+                        return this._database.create(this._tableName).set(values).execute(options);
+
+                    }
+
+                })).then(function (values) {
+
+                    //the new values should have an Id now
+                    entity.mixin(values);
+
+                    //pass pack the updated entity
+                    return entity;
+
                 });
+
+
             },
 
-            forgeEntity: function (record) {
+            create: function (values) {
 
-                var entity = null;
+                var options = {
+                    _schema: this._entitySchema,
+                    values: values
+                };
 
-
-                return entity;
-
+                return this.forge(this._entityPath, options, { type: 'entity', name: this._entityName }).then(this.hitch(function (entity) {
+                    entity.store = this;
+                    return entity;
+                }));
             },
 
             _findCallback: function (e) {
 
                 var cursor = e.get('results');
 
-                //wont to set the foundry on the cursor before its returned
-                cursor.foundry = this.hitch('forgeEntity');
+                cursor.foundry = this.hitch('create');
 
+            },
+
+            _findOneCallback: function (e) {
+
+                var record = e.get('results');
+
+                return this.create(record).then(function (entity) {
+                    e.set('results', entity);
+                });
 
             }
 

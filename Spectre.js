@@ -1,10 +1,14 @@
 define(['altair/facades/declare',
         'altair/Lifecycle',
         './extensions/Entity',
+        './extensions/EntitySave',
+        './nexusresolvers/Entity',
         'lodash'
 ], function (declare,
              Lifecycle,
              EntityExtension,
+             EntitySaveExtension,
+             EntityResolver,
              _) {
 
     return declare([Lifecycle], {
@@ -14,12 +18,16 @@ define(['altair/facades/declare',
 
 
             var _options            = options || this.options || { installExtension: true },
-                cartridge           = _options.extensionCartridge || this.nexus('cartridges/Extension');
+                cartridge           = _options.extensionCartridge || this.nexus('cartridges/Extension'),
+                resolver            = _options.entityResolver || new EntityResolver(this._nexus);
 
             //did someone pass strategies?
             if(_options.strategies) {
                 this._strategies = _options.strategies;
             }
+
+            //drop in resolver
+            this._nexus.addResolver(resolver);
 
             //reset cached stores
             this._cachedStores = [];
@@ -29,8 +37,10 @@ define(['altair/facades/declare',
 
                 this.deferred = this.forge('./foundries/Store').then(function (foundry) {
 
-                    var entity = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair, foundry);
-                    return cartridge.addExtensions([entity]);
+                    var entity      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair, foundry),
+                        entitySave  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair);
+
+                    return cartridge.addExtensions([entity, entitySave]);
 
                 }).then(this.hitch(function () {
                     return this;

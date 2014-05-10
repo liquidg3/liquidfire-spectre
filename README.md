@@ -1,4 +1,4 @@
-# Spectre
+# liquidfire:Spectre
 Where else would you go to find entities? What is an entity? It's easy;
 
 _an entity is an object that represents a record/document in a database._
