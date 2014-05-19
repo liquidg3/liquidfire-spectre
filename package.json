@@ -1,5 +1,8 @@
 {
-    "name":         "liquidfire:Spectre",
-    "version":      "0.0.1",
-    "description":  "Reall cool entities."
+    "name":               "liquidfire:Spectre",
+    "version":            "0.0.1",
+    "description":        "Reall cool entities.",
+    "altairDependencies": {
+        "liquidfire:Apollo": ">=0.0.x"
+    }
 }

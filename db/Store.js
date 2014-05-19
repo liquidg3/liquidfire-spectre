@@ -76,6 +76,12 @@ define(['altair/facades/declare',
 
             },
 
+            /**
+             * Create an entity with the values
+             *
+             * @param values
+             * @returns {*|Promise}
+             */
             create: function (values) {
 
                 var options = {
@@ -101,9 +107,13 @@ define(['altair/facades/declare',
 
                 var record = e.get('results');
 
-                return this.create(record).then(function (entity) {
-                    e.set('results', entity);
-                });
+                if(record) {
+
+                    return this.create(record).then(function (entity) {
+                        e.set('results', entity);
+                    });
+
+                }
 
             }
 

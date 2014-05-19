@@ -1,0 +1,12 @@
+<div class="form-group <%= className %>">
+
+    <label class="property-label"><%= options.label %></label>
+    <select <%- attributes %> name="<%= name %>" class="form-control">
+        <% Object.keys(options.multiOptions).forEach(function (id) { %>
+        <option <% if(value && value.primaryValue() === id) { %>selected="selected"
+                <% } %>
+                value="<%= id %>"><%= options.multiOptions[id] %></option>
+        <% }) %>
+    </select>
+
+</div>

@@ -36,3 +36,5 @@ this.entity('User').then(function (store) {
 
 ```
 
+### _HasRestEndpoints mixin
+This guy rocks. Mix him into your Alfred controller.

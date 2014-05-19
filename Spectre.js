@@ -3,15 +3,17 @@ define(['altair/facades/declare',
         './extensions/Entity',
         './extensions/EntitySave',
         './nexusresolvers/Entity',
-        'lodash'
+        'lodash',
+        'liquidfire/modules/apollo/mixins/_HasPropertyTypesMixin'
 ], function (declare,
              Lifecycle,
              EntityExtension,
              EntitySaveExtension,
              EntityResolver,
-             _) {
+             _,
+             _HasPropertyTypesMixin) {
 
-    return declare([Lifecycle], {
+    return declare([Lifecycle, _HasPropertyTypesMixin], {
 
         _cachedStores: null,
         startup: function (options) {
@@ -63,6 +65,7 @@ define(['altair/facades/declare',
         cacheStore: function (named, store) {
             this._cachedStores[named] = store;
         }
+
 
     });
 

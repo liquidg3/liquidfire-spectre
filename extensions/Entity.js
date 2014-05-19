@@ -1,12 +1,12 @@
 define(['altair/facades/declare',
         'altair/facades/mixin',
-        'altair/facades/hitch',
+        'altair/facades/when',
         'altair/plugins/node!path',
         'altair/cartridges/extension/extensions/_Base'],
 
     function (declare,
               mixin,
-              hitch,
+              when,
               pathUtil,
               _Base) {
 
@@ -52,8 +52,7 @@ define(['altair/facades/declare',
 
                         if(spectre.hasCachedStore(named)) {
 
-                            d = new this.Deferred();
-                            d.resolve(spectre.cachedStore(named));
+                            d = when(spectre.cachedStore(named));
 
                         } else {
 
@@ -63,6 +62,8 @@ define(['altair/facades/declare',
                                 spectre.cacheStore(named, store);
                                 return store;
                             });
+
+                            spectre.cacheStore(named, d);
 
                         }
 
