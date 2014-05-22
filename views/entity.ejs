@@ -2,10 +2,10 @@
 
     <label class="property-label"><%= options.label %></label>
     <select <%- attributes %> name="<%= name %>" class="form-control">
-        <% Object.keys(options.multiOptions).forEach(function (id) { %>
+        <% Object.keys(options.choices).forEach(function (id) { %>
         <option <% if(value && value.primaryValue() === id) { %>selected="selected"
                 <% } %>
-                value="<%= id %>"><%= options.multiOptions[id] %></option>
+                value="<%= id %>"><%= options.choices[id] %></option>
         <% }) %>
     </select>
 

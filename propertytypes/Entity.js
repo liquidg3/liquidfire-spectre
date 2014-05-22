@@ -67,7 +67,7 @@ define(['altair/facades/declare',
             },
 
             /**
-             * Before we render, we have to populate multiOptions (which means searching a data store for entities)
+             * Before we render, we have to populate choices (which means searching a data store for entities)
              *
              * @param renderer
              * @param template
@@ -77,7 +77,7 @@ define(['altair/facades/declare',
             render: function (template, context) {
 
                 var entityType = context.options.entity,
-                    multiOptions = {};
+                    choices = {};
 
                 return this.nexus(entityType).then(function (store) {
 
@@ -86,12 +86,12 @@ define(['altair/facades/declare',
                 }).then(function (cursor) {
 
                     return cursor.each().step(function (entity) {
-                        multiOptions[entity.primaryValue()] = entity.has('name') ? entity.get('name') : entity.name; //nexus name if no name property exists
+                        choices[entity.primaryValue()] = entity.has('name') ? entity.get('name') : entity.name; //nexus name if no name property exists
                     });
 
                 }).then(this.hitch(function () {
 
-                    context.options.multiOptions = multiOptions;
+                    context.options.choices = choices;
                     return this.parent.render(template, context);
 
                 }));
