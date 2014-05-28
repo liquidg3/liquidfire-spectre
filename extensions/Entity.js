@@ -50,6 +50,11 @@ define(['altair/facades/declare',
                                 type: 'entity-store'
                             }, config || {});
 
+                        //if it's a nexus name, pass it off
+                        if(named.search(':') > 0) {
+                            return this.nexus(named, options, config);
+                        }
+
                         if(spectre.hasCachedStore(named)) {
 
                             d = when(spectre.cachedStore(named));
