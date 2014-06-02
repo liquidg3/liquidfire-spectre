@@ -9,11 +9,12 @@ A model is where you house your "business logic." It is what makes your app go. 
 an entity, but not always.
 
 ## What do entities do?
-Let me show you:
+Let me show you an entity (and entity store) in action.
 
 ```js
 this.entity('User').then(function (store) {
 
+    //the User store is where you'll find all your users. A store as database agnostic
     return store.find().where('email', '==', 'test@test.com');
 
 }).then(function (user) {
@@ -22,19 +23,40 @@ this.entity('User').then(function (store) {
         throw new Error('user not found!');
     } else {
 
+        //since entities use apollo/_HasSchemaMixin, the familiar get/set/setValues/getValues/etc. are available.
         return user.set('firstName', 'tay')
-                   .save();
+                   .save(); //every entity is extended with save(), it returns a Promise.
 
 
     }
 
 }).then(function (user) {
 
-    console.log(user.firstName, 'updated');
+    //the first name is now updated
+    console.log(user.get('firstName'), 'updated');
 
 });
 
 ```
 
-### _HasRestEndpoints mixin
-This guy rocks. Mix him into your Alfred controller.
+##Creating your first entity
+An entity is a generic AMD module that mixes in apollo/_HasSchemaMixin.
+
+```js
+
+define(['altair/facades/declare',
+        'apollo/_HasSchemaMixin'
+], function (declare, _HasSchemaMixin) {
+
+    return declare([_HasSchemaMixin], {
+
+
+
+
+
+    });
+
+});
+
+
+```
