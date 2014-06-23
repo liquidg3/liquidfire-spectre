@@ -36,7 +36,7 @@ define(['altair/facades/declare',
              */
             toJsValue: function (value, options, config) {
 
-                return this.nexus(options.entity).then(function (store) {
+                return (!value) ? null : this.nexus(options.entity).then(function (store) {
                     return store.findOne().where(store.schema().primaryProperty().name, '===', value).execute();
                 });
 
@@ -78,6 +78,10 @@ define(['altair/facades/declare',
 
                 var entityType = context.options.entity,
                     choices = {};
+
+                if(!context.options.required) {
+                    choices[""] = "";
+                }
 
                 return this.nexus(entityType).then(function (store) {
 
