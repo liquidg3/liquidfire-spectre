@@ -7,7 +7,7 @@ define(['altair/facades/declare',
         return declare([_Base, _DeferredMixin], {
 
             key:                'entity',
-            makeValuesSingular: false,
+            makeValuesSingular: true,
             options:            {
                 entity: {
                     type:    'string',
@@ -36,6 +36,10 @@ define(['altair/facades/declare',
              */
             toJsValue: function (value, options, config) {
 
+                if(value && value.name) {
+                    return value;
+                }
+
                 return (!value) ? null : this.nexus(options.entity).then(function (store) {
                     return store.findOne().where(store.schema().primaryProperty().name, '===', value).execute();
                 });
@@ -45,9 +49,11 @@ define(['altair/facades/declare',
             toDatabaseValue: function (value, options, config) {
 
                 if(_.isString(value)) {
-                    return value;
-                } else {
+                    return (value) ? value: null;
+                } else if(value.primaryValue) {
                     return value.primaryValue();
+                } else {
+                    return null;
                 }
 
             },
