@@ -42,7 +42,7 @@ define(['altair/facades/declare',
                     entity: function (named, options, config) {
 
                         var base = this.parent ? this.parent.entityPath : this.entityPath,//if we have a parent, assume we want to use it as the base path
-                            _p = this.resolvePath(pathUtil.join(base, named.toLowerCase(), named)),
+                            _p,
                             spectre = this.nexus('liquidfire:Spectre'),
                             d,
                             _options = options || {},
@@ -53,6 +53,10 @@ define(['altair/facades/declare',
                         //if it's a nexus name, pass it off
                         if(named.search(':') > 0) {
                             return this.nexus(named, options, config);
+                        }
+                        //build the path if it's not a nexus id
+                        else {
+                            _p = this.resolvePath(pathUtil.join(base, named.toLowerCase(), named));
                         }
 
                         if(spectre.hasCachedStore(named)) {

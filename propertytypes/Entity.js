@@ -1,8 +1,9 @@
 define(['altair/facades/declare',
-    'apollo/propertytypes/_Base',
-    'altair/mixins/_DeferredMixin'],
+        'apollo/propertytypes/_Base',
+        'altair/mixins/_DeferredMixin',
+        'altair/plugins/node!mongodb'],
 
-    function (declare, _Base, _DeferredMixin) {
+    function (declare, _Base, _DeferredMixin, mongodb) {
 
         return declare([_Base, _DeferredMixin], {
 
@@ -22,6 +23,13 @@ define(['altair/facades/declare',
                     options: {
                         label:       'Query',
                         description: 'Pass a Database/Statement compatible query and I\'ll use it to filter results'
+                    }
+                },
+                dbRef: {
+                    type: 'boolean',
+                    options: {
+                        label: 'Use dbref',
+                         description: 'I will store/load dbrefs instead of id\'s.'
                     }
                 }
             },
@@ -49,10 +57,22 @@ define(['altair/facades/declare',
             toDatabaseValue: function (value, options, config) {
 
                 if(_.isString(value)) {
+
                     return (value) ? value: null;
-                } else if(value.primaryValue) {
+
+                } else if(value.primaryValue && !options.dbRef) {
+
                     return value.primaryValue();
+
+                } else if(value.primaryValue && options.dbRef) {
+
+                    var tableName   = value.schema().option('tableName'),
+                        BSON        = mongodb.BSONPure;
+
+                    return new BSON.DBRef(tableName, new BSON.ObjectID(value.primaryValue()));
+
                 } else {
+
                     return null;
                 }
 
@@ -65,6 +85,13 @@ define(['altair/facades/declare',
                     return results.has('name') ? results.get('name') : results.name;
 
                 });
+
+            },
+
+
+            toDatabaseQueryValue: function (value, options, config) {
+
+                return this.toDatabaseValue(value, options, config);
 
             },
 
@@ -108,6 +135,7 @@ define(['altair/facades/declare',
 
 
             }
+
 
 
         });

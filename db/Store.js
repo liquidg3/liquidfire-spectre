@@ -25,13 +25,15 @@ define(['altair/facades/declare',
                 this._tableName     = this._entitySchema.option('tableName');
                 this._entityPath    = options.entityPath;
                 this._entityName    = options.entityName || this._entityPath.split('/').pop(); //default entity name (if no "name" is specified in schema)
+                this.name           = this._entityName;
 
             },
 
-            name: function () {
-                return this._entityName;
-            },
-
+            /**
+             * Schema attached to every entity we create
+             *
+             * @returns {null}
+             */
             schema: function () {
                 return this._entitySchema;
             },
@@ -95,7 +97,7 @@ define(['altair/facades/declare',
                 }));
             },
 
-            _findCallback: function (e) {
+            _didFindCallback: function (e) {
 
                 var cursor = e.get('results');
 
@@ -103,7 +105,7 @@ define(['altair/facades/declare',
 
             },
 
-            _findOneCallback: function (e) {
+            _didFindOneCallback: function (e) {
 
                 var record = e.get('results');
 
@@ -115,7 +117,40 @@ define(['altair/facades/declare',
 
                 }
 
-            }
+            },
+
+            /**
+             * Before any query is executed I'm going to see if the schema can help transform values to get them ready
+             * to hit the database.
+             *
+             * @param e {altair.events.Event}
+             * @private
+             */
+            _willExecuteQuery: function (e) {
+
+                var statement = e.get('statement'),
+                    where     = statement.clauses().where,
+                    schema    = this.schema();
+
+                if(where) {
+
+                    _.each(where, function (value, key) {
+
+                        if(schema.has(key)) {
+
+                            where[key] = schema.applyOnProperty(['toDatabaseQueryValue', 'toDatabaseValue', 'noop'], key, value, {
+                                statement: statement,
+                                store: this
+                            });
+
+                        }
+
+
+                    }, this);
+
+                }
+
+            },
 
     });
 
@@ -127,17 +162,26 @@ define(['altair/facades/declare',
 
         extension[named] = function () {
 
-            var args            = Array.prototype.slice.call(arguments),
-                callbackName    = '_' + named + 'Callback',
+            var args                = Array.prototype.slice.call(arguments),
+                willCallbackName    = '_will' + _.capitalize(named) + 'Callback',
+                didCallbackName     = '_did' + _.capitalize(named) + 'Callback',
                 statement;
 
             args.unshift(this._tableName);
 
             statement = this._database[named].apply(this._database, args);
 
-            if(this[callbackName]) {
-                statement.on('did-execute').then(this.hitch(callbackName));
+            if(this[willCallbackName]) {
+                statement.on('will-execute').then(this.hitch(willCallbackName));
             }
+
+            //global callback
+            statement.on('will-execute').then(this.hitch('_willExecuteQuery'));
+
+            if(this[didCallbackName]) {
+                statement.on('did-execute').then(this.hitch(didCallbackName));
+            }
+
 
             return statement;
 
