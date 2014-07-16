@@ -1,10 +1,12 @@
 define(['altair/facades/declare',
         'altair/facades/all',
         'altair/mixins/_DeferredMixin',
+        'dojo/_base/lang',
         'lodash'
 ], function (declare,
              all,
              _DeferredMixin,
+             lang,
             _) {
 
     var delegateMethods = ['find', 'findOne', 'delete', 'update', 'count'],
@@ -130,27 +132,53 @@ define(['altair/facades/declare',
 
                 var statement = e.get('statement'),
                     where     = statement.clauses().where,
-                    schema    = this.schema();
+                    schema    = this.schema(),
+                    transform;
 
-                if(where) {
 
-                    _.each(where, function (value, key) {
+                    transform = function (value, key, all, path) {
 
-                        if(schema.has(key)) {
+                        var tranformed,
+                            subKey;
 
-                            where[key] = schema.applyOnProperty(['toDatabaseQueryValue', 'toDatabaseValue', 'noop'], key, value, {
-                                statement: statement,
-                                store: this
-                            });
+                        if(!path) {
+                            path = key;
+                        }
+
+                        if (schema.has(key)) {
+
+                            //query can be something like $!== , $<, $>, etc. If that is the case, dive in and loop through that portion
+                            if(_.isObject(value) && Object.keys(value)[0][0] === '$') {
+
+                                _.each(Object.keys(value), function (_key) {
+                                    transform(value[_key], key, all, path + '.' + _key);
+                                }, this);
+
+
+                            } else {
+
+                                tranformed = schema.applyOnProperty(['toDatabaseQueryValue', 'toDatabaseValue', 'noop'], key, value, {
+                                    statement: statement,
+                                    store: this
+                                });
+
+                                lang.setObject(path, tranformed, where);
+
+                            }
+
 
                         }
 
 
-                    }, this);
+                    };
+
+                if (where) {
+
+                    _.each(where, transform, this);
 
                 }
 
-            },
+            }
 
     });
 

@@ -1,13 +1,7 @@
 define(['altair/facades/declare',
-    'altair/facades/mixin',
-    'altair/facades/hitch',
-    'altair/plugins/node!path',
-    'altair/cartridges/extension/extensions/_Base'],
+        'altair/cartridges/extension/extensions/_Base'],
 
     function (declare,
-              mixin,
-              hitch,
-              pathUtil,
               _Base) {
 
         return declare([_Base], {
