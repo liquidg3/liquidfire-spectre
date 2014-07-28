@@ -2,6 +2,7 @@ define(['altair/facades/declare',
         'altair/Lifecycle',
         './extensions/Entity',
         './extensions/EntitySave',
+        './extensions/EntityDelete',
         './nexusresolvers/Entity',
         'lodash',
         'liquidfire/modules/apollo/mixins/_HasPropertyTypesMixin'
@@ -9,6 +10,7 @@ define(['altair/facades/declare',
              Lifecycle,
              EntityExtension,
              EntitySaveExtension,
+             EntityDeleteExtension,
              EntityResolver,
              _,
              _HasPropertyTypesMixin) {
@@ -24,7 +26,7 @@ define(['altair/facades/declare',
                 resolver            = _options.entityResolver || new EntityResolver(this._nexus);
 
             //did someone pass strategies?
-            if(_options.strategies) {
+            if (_options.strategies) {
                 this._strategies = _options.strategies;
             }
 
@@ -35,14 +37,15 @@ define(['altair/facades/declare',
             this._cachedStores = [];
 
             //should we install the extension?
-            if(_options.installExtension !== false) {
+            if (_options.installExtension !== false) {
 
                 this.deferred = this.forge('./foundries/Store').then(function (foundry) {
 
                     var entity      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair, foundry),
-                        entitySave  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair);
+                        entitySave  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair),
+                        entityDelete  = _options.entityDeleteExtension || new EntityDeleteExtension(cartridge, cartridge.altair);
 
-                    return cartridge.addExtensions([entity, entitySave]);
+                    return cartridge.addExtensions([entity, entitySave, entityDelete]);
 
                 }).then(this.hitch(function () {
                     return this;

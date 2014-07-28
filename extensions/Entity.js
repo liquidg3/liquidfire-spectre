@@ -51,7 +51,7 @@ define(['altair/facades/declare',
                             }, config || {});
 
                         //if it's a nexus name, pass it off
-                        if(named.search(':') > 0) {
+                        if (named.search(':') > 0) {
                             return this.nexus(named, options, config);
                         }
                         //build the path if it's not a nexus id

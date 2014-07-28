@@ -1,49 +1,45 @@
 //only to be used through the entity extension
 define(['altair/facades/declare',
-        'lodash',
-        'altair/plugins/node!path',
-        'altair/facades/mixin',
-        'altair/mixins/_DeferredMixin'],
+    'lodash',
+    'altair/plugins/node!path',
+    'altair/facades/mixin',
+    'altair/mixins/_DeferredMixin'],
 
-    function (declare,
-              _,
-              pathUtil,
-              mixin,
-              _DeferredMixin) {
+    function (declare, _, pathUtil, mixin, _DeferredMixin) {
 
-    return declare(_DeferredMixin, {
+        return declare(_DeferredMixin, {
 
 
-        forge: function (path, options, config) {
+            forge: function (path, options, config) {
 
-            var schemaPath = pathUtil.join(path, '..', 'schema.json'),
-                tableName;
+                var schemaPath = pathUtil.join(path, '..', 'schema.json'),
+                    tableName;
 
-            //first thing we must do is load the schema and make sure it has a tableName
-            return this.parseConfig(schemaPath).then(this.hitch(function (schema) {
+                //first thing we must do is load the schema and make sure it has a tableName
+                return this.parseConfig(schemaPath).then(this.hitch(function (schema) {
 
-                if(!schema.tableName) {
-                    throw new Error('The entity at ' + path + ' needs a tableName in its schema.json. It should be on the same level as properties and be the name of the table/collection where this entity is saved.');
-                }
+                    if (!schema.tableName) {
+                        throw new Error('The entity at ' + path + ' needs a tableName in its schema.json. It should be on the same level as properties and be the name of the table/collection where this entity is saved.');
+                    }
 
-                var _options = mixin({
-                    database:   this.nexus('cartridges/Database'),
-                    schema:     this.nexus('cartridges/Apollo').createSchema(schema),
-                    entityPath: path
-                }, options || {});
+                    var _options = mixin({
+                        database:   this.nexus('cartridges/Database'),
+                        schema:     this.nexus('cartridges/Apollo').createSchema(schema),
+                        entityPath: path
+                    }, options || {});
 
-                if(!_options.database) {
-                    throw new Error('You must enable the database cartridge for entities to work.');
-                }
+                    if (!_options.database) {
+                        throw new Error('You must enable the database cartridge for entities to work.');
+                    }
 
-                return this.parent.forge('db/Store', _options, config);
-
-
-            }));
+                    return this.parent.forge('db/Store', _options, config);
 
 
-        }
+                }));
+
+
+            }
+
+        });
 
     });
-
-});
