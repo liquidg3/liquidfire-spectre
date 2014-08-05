@@ -103,7 +103,7 @@ define(['altair/facades/declare',
                         store: this
                     }).then(function (e) {
 
-                        if(e.active) {
+                        if (e.active) {
                             return this._database['delete'](this._tableName).where(entity.primaryProperty().name, '===', entity.primaryValue()).execute();
                         } else {
                             return false;
