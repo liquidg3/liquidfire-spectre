@@ -87,12 +87,13 @@ define(['altair/facades/declare',
                     var options = {
                         _schema: this._entitySchema,
                         values:  values
-                    };
+                    }, entity;
 
-                    return this.forge(this._entityPath, options, { type: 'entity', name: this._entityName }).then(this.hitch(function (entity) {
-                        entity.store = this;
-                        return entity;
-                    }));
+                    entity          = this.forgeSync(this._entityPath, options, { type: 'entity', name: this._entityName });
+                    entity.store    = this;
+
+                    return entity;
+
                 },
 
                 'delete': function (entity, options) {

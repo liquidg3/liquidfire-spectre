@@ -16,13 +16,13 @@ define(['altair/facades/declare',
             _foundry: null,
             constructor: function (cartridge, altair, foundry) {
 
-                if(!cartridge) {
+                if (!cartridge) {
                     throw new Error('You must pass your extension the Extension cartridge');
                 }
 
                 this._foundry   = foundry;
 
-                if(!this.name) {
+                if (!this.name) {
                     throw new Error('You must define a .name for your extension.');
                 }
             },
@@ -59,7 +59,7 @@ define(['altair/facades/declare',
                             _p = this.resolvePath(pathUtil.join(base, named.toLowerCase(), named));
                         }
 
-                        if(spectre.hasCachedStore(named)) {
+                        if (spectre.hasCachedStore(named)) {
 
                             d = when(spectre.cachedStore(named));
 
