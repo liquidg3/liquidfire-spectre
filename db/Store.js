@@ -125,13 +125,13 @@ define(['altair/facades/declare',
 
                 _didFindOneCallback: function (e) {
 
-                    var record = e.get('results');
+                    var record = e.get('results'),
+                        entity;
 
                     if (record) {
 
-                        return this.create(record).then(function (entity) {
-                            e.set('results', entity);
-                        });
+                        entity = this.create(record);
+                        e.set('results', entity);
 
                     }
 
