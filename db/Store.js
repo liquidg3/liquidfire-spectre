@@ -43,10 +43,28 @@ define(['altair/facades/declare',
                  */
                 save: function (entity, options) {
 
-                    return all(entity.getValues({}, { methods: ['toDatabaseValue'] })).then(this.hitch(function (values) {
+                    var action = entity.primaryValue() ? 'update' : 'delete';
 
-                            //does this entity have a primary key?
-                        if (entity.primaryValue()) {
+                    return all(entity.getValues({}, { methods: ['toDatabaseValue'] })).then(function (values) {
+
+                        return this.parent.emit('will-save-entity', {
+                            store: this,
+                            action: action,
+                            entity: entity,
+                            values: values,
+                            options: options
+                        });
+
+                    }.bind(this)).then(function (e) {
+
+                        if (!e.active) {
+                            return false;
+                        }
+
+                        var values = e.get('values');
+
+                        //does this entity have a primary key?
+                        if (action === 'update') {
 
                             //if so, update
                             return this._database.update(this._tableName).set(values).where(entity.primaryProperty().name, '===', entity.primaryValue()).execute(options);
@@ -63,15 +81,27 @@ define(['altair/facades/declare',
 
                         }
 
-                    })).then(function (values) {
+                    }.bind(this)).then(function (values) {
+
+                        //event was cancelled
+                        if (values === false) {
+                            return;
+                        }
 
                         //the new values should have an Id now
                         entity.mixin(values);
 
+                        this.parent.emit('did-save-entity', {
+                            store: this,
+                            action: action,
+                            entity: entity,
+                            options: options
+                        });
+
                         //pass pack the updated entity
                         return entity;
 
-                    });
+                    }.bind(this));
 
 
                 },
@@ -89,8 +119,19 @@ define(['altair/facades/declare',
                         values:  values
                     }, entity;
 
+                    this.parent.emit('will-create-entity', {
+                        store: this,
+                        options: options
+                    });
+
                     entity          = this.forgeSync(this._entityPath, options, { type: 'entity', name: this._entityName });
                     entity.store    = this;
+
+                    this.parent.emit('did-creat-entity', {
+                        store: this,
+                        entity: entity,
+                        options: options
+                    });
 
                     return entity;
 
@@ -109,6 +150,14 @@ define(['altair/facades/declare',
                         } else {
                             return false;
                         }
+
+                    }.bind(this)).then(function () {
+
+                        return this.parent.emit('did-delete-entity', {
+                            entity: entity,
+                            options: options,
+                            store: this
+                        });
 
                     }.bind(this));
 
