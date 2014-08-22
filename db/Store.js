@@ -41,9 +41,14 @@ define(['altair/facades/declare',
                  *
                  * @param entity
                  */
-                save: function (entity, options) {
+                save: function (entity, options, config) {
 
-                    var action = entity.primaryValue() ? 'update' : 'delete';
+                    var _config = config || {},
+                        action = entity.primaryValue() ? 'update' : 'insert';
+
+                    if (_config.action) {
+                        action = _config.action;
+                    }
 
                     return all(entity.getValues({}, { methods: ['toDatabaseValue'] })).then(function (values) {
 
@@ -135,6 +140,10 @@ define(['altair/facades/declare',
 
                     return entity;
 
+                },
+
+                deleteMany: function () {
+                    return this._database['delete'](this._tableName);
                 },
 
                 'delete': function (entity, options) {

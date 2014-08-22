@@ -1,5 +1,5 @@
 define(['altair/facades/declare',
-        'altair/cartridges/extension/extensions/_Base'],
+    'altair/cartridges/extension/extensions/_Base'],
 
     function (declare,
               _Base) {
@@ -12,8 +12,8 @@ define(['altair/facades/declare',
 
                 Module.extendOnce({
                     store: null,
-                    save: function (options) {
-                        return this.store.save(this, options);
+                    save: function (options, config) {
+                        return this.store.save(this, options, config);
                     }
                 });
 
