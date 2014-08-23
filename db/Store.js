@@ -78,9 +78,6 @@ define(['altair/facades/declare',
                         //otherwise lets create
                         else {
 
-                            //lets not pass a primary key field to the database
-                            delete values[entity.primaryProperty().name];
-
                             //create record
                             return this._database.create(this._tableName).set(values).execute(options);
 
@@ -222,7 +219,7 @@ define(['altair/facades/declare',
                         if (schema.has(key)) {
 
                             //query can be something like $!== , $<, $>, etc. If that is the case, dive in and loop through that portion
-                            if (_.isObject(value) && Object.keys(value)[0][0] === '$') {
+                            if (_.isObjectLiteral(value) && Object.keys(value)[0][0] === '$') {
 
                                 _.each(Object.keys(value), function (_key) {
                                     transform(value[_key], key, all, path + '.' + _key);
