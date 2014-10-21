@@ -25,6 +25,7 @@ define(['altair/facades/declare',
                 if (!this.name) {
                     throw new Error('You must define a .name for your extension.');
                 }
+
             },
 
             /**

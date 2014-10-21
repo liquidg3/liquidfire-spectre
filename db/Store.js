@@ -52,7 +52,7 @@ define(['altair/facades/declare',
 
                     return all(entity.getValues({}, { methods: ['toDatabaseValue'] })).then(function (values) {
 
-                        return this.parent.emit('will-save-entity', {
+                        return this.parent.emit('liquidfire:Spectre::will-save-entity', {
                             store: this,
                             action: action,
                             entity: entity,
@@ -93,7 +93,7 @@ define(['altair/facades/declare',
                         //the new values should have an Id now
                         entity.mixin(values);
 
-                        this.parent.emit('did-save-entity', {
+                        this.parent.emit('liquidfire:Spectre::did-save-entity', {
                             store: this,
                             action: action,
                             entity: entity,
@@ -121,7 +121,7 @@ define(['altair/facades/declare',
                         values:  values
                     }, entity;
 
-                    this.parent.emit('will-create-entity', {
+                    this.parent.emit('liquidfire:Spectre::will-create-entity', {
                         store: this,
                         options: options
                     });
@@ -129,7 +129,7 @@ define(['altair/facades/declare',
                     entity          = this.forgeSync(this._entityPath, options, { type: 'entity', name: this._entityName });
                     entity.store    = this;
 
-                    this.parent.emit('did-creat-entity', {
+                    this.parent.emit('liquidfire:Spectre::did-creat-entity', {
                         store: this,
                         entity: entity,
                         options: options
@@ -145,7 +145,7 @@ define(['altair/facades/declare',
 
                 'delete': function (entity, options) {
 
-                    return this.parent.emit('will-delete-entity', {
+                    return this.parent.emit('liquidfire:Spectre::will-delete-entity', {
                         entity: entity,
                         options: options,
                         store: this
@@ -159,7 +159,7 @@ define(['altair/facades/declare',
 
                     }.bind(this)).then(function () {
 
-                        return this.parent.emit('did-delete-entity', {
+                        return this.parent.emit('liquidfire:Spectre::did-delete-entity', {
                             entity: entity,
                             options: options,
                             store: this
@@ -205,7 +205,6 @@ define(['altair/facades/declare',
                         where = statement.clauses().where,
                         schema = this.schema(),
                         transform;
-
 
                     transform = function (value, key, all, path) {
 
@@ -280,7 +279,6 @@ define(['altair/facades/declare',
                 if (this[didCallbackName]) {
                     statement.on('did-execute').then(this.hitch(didCallbackName));
                 }
-
 
                 return statement;
 

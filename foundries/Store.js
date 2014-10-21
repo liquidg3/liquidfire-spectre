@@ -1,19 +1,24 @@
 //only to be used through the entity extension
 define(['altair/facades/declare',
-    'lodash',
-    'altair/plugins/node!path',
-    'altair/facades/mixin',
-    'altair/mixins/_DeferredMixin'],
+        'lodash',
+        'altair/plugins/node!path',
+        'altair/plugins/node!fs',
+        'altair/facades/mixin',
+        'altair/mixins/_DeferredMixin'],
 
-    function (declare, _, pathUtil, mixin, _DeferredMixin) {
+    function (declare, _, pathUtil, fs, mixin, _DeferredMixin) {
 
         return declare(_DeferredMixin, {
-
 
             forge: function (path, options, config) {
 
                 var schemaPath = pathUtil.join(path, '..', 'schema.json'),
+                    storePath  = pathUtil.join(path, '../../../stores/', path.split(pathUtil.sep).pop()),
                     tableName;
+
+                if (!fs.existsSync(storePath  + '.js')) {
+                    storePath = 'db/Store';
+                }
 
                 //first thing we must do is load the schema and make sure it has a tableName
                 return this.parseConfig(schemaPath).then(this.hitch(function (schema) {
@@ -32,7 +37,7 @@ define(['altair/facades/declare',
                         throw new Error('You must enable the database cartridge for entities to work.');
                     }
 
-                    return this.parent.forge('db/Store', _options, config);
+                    return this.parent.forge(storePath, _options, config);
 
 
                 }));
