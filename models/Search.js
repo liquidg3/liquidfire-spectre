@@ -20,6 +20,8 @@ define(['altair/facades/declare',
                     page     = parseInt(_options.page, 10),
                     sort     = _options.sort,
                     event    = _options.event,
+                    query    = _options.query,
+                    findOptions = _options.findOptions || {},
                     searchField = _options.searchField,
                     searchValue = _options.searchValue,
                     transform = _options.transform || function (entity) {
@@ -27,16 +29,24 @@ define(['altair/facades/declare',
                     },
                     perPage  = parseInt(_options.perPage, 10);
 
+                if (_.isNaN(page)) {
+                    page = 0;
+                }
+
+                if (_.isNaN(perPage)) {
+                    perPage = 10;
+                }
+
                 this.assertNumeric(page, 'You must pass a "page" option to search.');
                 this.assertNumeric(perPage, 'You must pass a "perPage" option to search.');
 
                 //max per page
-                perPage = Math.min(perPage, 50);
+                perPage = Math.min(perPage, 100);
 
                 return this.parent.entity(entityType).then(function (store) {
 
                     //create statement, starting with skip & limit
-                    var statement = store.find().skip(page * perPage).limit(perPage);
+                    var statement = store.find(findOptions).skip(page * perPage).limit(perPage);
 
                     //if a sort was passed, sort by each
                     if (sort) {
@@ -45,6 +55,11 @@ define(['altair/facades/declare',
                             statement.sortBy(field, direction);
                         });
 
+                    }
+
+                    //custom query
+                    if (query) {
+                        statement.where(query);
                     }
 
                     //are we searching?
@@ -64,8 +79,8 @@ define(['altair/facades/declare',
                         results.push(transform(entity));
 
                     }).then(function () {
-                        return results;
-                    });
+                        return this.all(results);
+                    }.bind(this));
 
                     return this.all({
                         total: total,
@@ -76,12 +91,21 @@ define(['altair/facades/declare',
 
             },
 
+            /**
+             * Find entities based of an event (i check the request object)
+             *
+             * @param entityType
+             * @param e
+             * @param options
+             * @returns {*}
+             */
             findFromEvent: function (entityType, e, options) {
 
                 var request = e.get('request'),
                     _options = {
                         perPage:    request.get('perPage'),
                         page:       request.get('page'),
+                        findOptions: {},
                         searchField: request.get('searchField'),
                         searchValue: request.get('searchValue'),
                         transform:  function (entity) {

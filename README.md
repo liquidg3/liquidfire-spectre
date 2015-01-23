@@ -24,9 +24,9 @@ Let me show you an entity (and entity store) in action.
 
 I'm going to assume you are here: `vendors/{{vendorname}}/modules/{{modulename}}`.
 
-1. Create `entities/user/User.js` and drop this in:
+### 1. Create `entities/user/User.js` and drop this in:
 
-``js
+```js
 
 define(['altair/facades/declare',
         'apollo/_HasSchemaMixin'
@@ -39,7 +39,7 @@ define(['altair/facades/declare',
 
 });
 
-2. Create `entities/user/schema.json` and drop this in:
+### 2. Create `entities/user/schema.json` and drop this in:
 
 ```json
 {
@@ -80,7 +80,7 @@ define(['altair/facades/declare',
 
 ```
 
-## Using the store to find an entity
+### Using the store to find an entity
 ```js
 this.entity('User').then(function (store) {
 
@@ -138,9 +138,8 @@ Create `stores/User.js` and drop this in:
 
 ```js
 define(['altair/facades/declare',
-        'liquidfire/modules/spectre/db/Store'
+    'liquidfire/modules/spectre/db/Store'
 ], function (declare, Store) {
-
 
     return declare([Store], {
 
@@ -157,7 +156,7 @@ define(['altair/facades/declare',
 ```
 
 Now you can do the following:
-
+```js
 this.entity('User').then(function (store) {
 
     return store.findAdminUsers().execute();
@@ -171,7 +170,7 @@ this.entity('User').then(function (store) {
     });
 
 });
-
+```
 ##Custom Statement
 You can customize how a database `Statement` works from a store pretty easily. Here is a real
 world example of a custom `Store` with a custom `Statement`.
@@ -218,5 +217,41 @@ define(['altair/facades/declare',
     });
 
 });
-
 ```
+
+## Quick REST endpoints using the search model
+When you need to create an endpoint to search entities with all the fancy skip, limit, search term, etc. you can use 
+`liquidfire:Spectre/models/Search` to get very far very fast. Inside your controller, you can:
+
+```js
+startup: function (e) {
+
+    //mixin dependencies
+    this.defered = this.all({
+        _search:            this.model('liquidfire:Spectre/models/Search', null, { parent: this }) //using `this` as parent makes this.entity() behave relative to our controller
+    }).then(function (deps) {
+
+        declare.safeMixin(this, deps);
+        
+        return this;
+
+    }.bind(this));
+    
+    return this.inherited(arguments);
+    
+},
+
+users: function (e) {
+    return this._search.findFromEvent('User', e);
+
+}
+```
+That's it. Now you can call `/v1/rest/your/endpoint` and pass values in the query string to customize your results.
+Example: `/v1/rest/users?perPage=20&page=2&sortField=name&sortDirection=DESC
+
+- `perPage`: how many results to return at once (defaults to 10, max 100)
+- `page`: the page we are on
+- `sortField`: the field to sort on
+- `sortDirection`: ASC or DESC
+- `searchField`: anything passed to `searchValue` will search against this field
+- `searchValue`: the search string

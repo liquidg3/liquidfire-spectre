@@ -18,12 +18,12 @@ define(['altair/facades/declare',
 
                 constructor: function (options) {
 
-                    this._database = options.database;
-                    this._entitySchema = options.schema;
-                    this._tableName = this._entitySchema.option('tableName');
-                    this._entityPath = options.entityPath;
-                    this._entityName = options.entityName || this._entityPath.split('/').pop(); //default entity name (if no "name" is specified in schema)
-                    this.name = this._entityName;
+                    this._database      = options.database;
+                    this._entitySchema  = options.schema;
+                    this._tableName     = this._entitySchema.option('tableName');
+                    this._entityPath    = options.entityPath;
+                    this._entityName    = options.entityName || this._entityPath.split('/').pop(); //default entity name (if no "name" is specified in schema)
+                    this.name           = this._entityName;
 
                 },
 
