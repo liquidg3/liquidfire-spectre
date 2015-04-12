@@ -18,6 +18,7 @@ define(['altair/facades/declare',
     return declare([Lifecycle, _HasPropertyTypesMixin], {
 
         _cachedStores: null,
+        entityFoundry: null,
         startup: function (options) {
 
 
@@ -34,20 +35,22 @@ define(['altair/facades/declare',
             this._nexus.addResolver(resolver);
 
             //reset cached stores
-            this._cachedStores = [];
+            this._cachedStores = {};
 
             //should we install the extension?
             if (_options.installExtension !== false) {
 
                 this.deferred = this.forge('./foundries/Store').then(function (foundry) {
 
-                    var entity      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair, foundry),
+                    this.entityFoundry = foundry;
+
+                    var entity      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair),
                         entitySave  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair),
                         entityDelete  = _options.entityDeleteExtension || new EntityDeleteExtension(cartridge, cartridge.altair);
 
                     return cartridge.addExtensions([entity, entitySave, entityDelete]);
 
-                }).then(this.hitch(function () {
+                }.bind(this)).then(this.hitch(function () {
                     return this;
                 }));
 

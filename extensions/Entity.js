@@ -13,14 +13,11 @@ define(['altair/facades/declare',
         return declare([_Base], {
 
             name: 'entity',
-            _foundry: null,
-            constructor: function (cartridge, altair, foundry) {
+            constructor: function (cartridge, altair) {
 
                 if (!cartridge) {
                     throw new Error('You must pass your extension the Extension cartridge');
                 }
-
-                this._foundry   = foundry;
 
                 if (!this.name) {
                     throw new Error('You must define a .name for your extension.');
@@ -36,8 +33,6 @@ define(['altair/facades/declare',
 
             extend: function (Module) {
 
-                var foundry = this._foundry;
-
                 Module.extendOnce({
                     entityPath: './entities',
                     entity: function (named, options, config) {
@@ -49,7 +44,8 @@ define(['altair/facades/declare',
                             _options = options || {},
                             _c = mixin({
                                 type: 'entity-store'
-                            }, config || {});
+                            }, config || {}),
+                            foundry = spectre.entityFoundry;
 
                         //if it's a nexus name, pass it off
                         if (named.search(':') > 0) {
@@ -60,9 +56,11 @@ define(['altair/facades/declare',
                             _p = this.resolvePath(pathUtil.join(base, named.toLowerCase(), named));
                         }
 
-                        if (spectre.hasCachedStore(named)) {
+                        var key = this.name.split('/')[0] + '/entities/' + named;
 
-                            d = when(spectre.cachedStore(named));
+                        if (spectre.hasCachedStore(key)) {
+
+                            d = when(spectre.cachedStore(key));
 
                         } else {
 
@@ -73,7 +71,7 @@ define(['altair/facades/declare',
                                 return store;
                             });
 
-                            spectre.cacheStore(named, d);
+                            spectre.cacheStore(key, d);
 
                         }
 

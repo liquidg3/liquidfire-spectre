@@ -105,7 +105,9 @@ define(['altair/facades/declare',
                     _options = {
                         perPage:    request.get('perPage'),
                         page:       request.get('page'),
-                        findOptions: {},
+                        findOptions: {
+                            event: e
+                        },
                         searchField: request.get('searchField'),
                         searchValue: request.get('searchValue'),
                         transform:  function (entity) {

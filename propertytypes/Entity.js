@@ -1,9 +1,10 @@
 define(['altair/facades/declare',
         'apollo/propertytypes/_Base',
         'altair/mixins/_DeferredMixin',
-        'altair/plugins/node!mongodb'],
+        'altair/plugins/node!mongodb',
+        'lodash'],
 
-    function (declare, _Base, _DeferredMixin, mongodb) {
+    function (declare, _Base, _DeferredMixin, mongodb, _) {
 
         return declare([_Base, _DeferredMixin], {
 
@@ -31,7 +32,26 @@ define(['altair/facades/declare',
                         label: 'Use dbref',
                          description: 'I will store/load dbrefs instead of id\'s.'
                     }
+                },
+                nameField: {
+                    type: 'string',
+                    options: {
+                        label: 'Name field',
+                        'default': 'name'
+                    }
+                },
+                type: {
+                    type:    'select',
+                    options: {
+                        label:       'Type',
+                        'default': 'string',
+                        choices: {
+                            string:     'String',
+                            integer:    'Integer'
+                        }
+                    }
                 }
+
             },
 
 
@@ -49,16 +69,16 @@ define(['altair/facades/declare',
                 }
 
                 return (!value) ? null : this.nexus(options.entity).then(function (store) {
-                    return store.findOne().where(store.schema().primaryProperty().name, '===', value).execute();
+                    return store.findOne(config && config.findOptions || {}).where(store.schema().primaryProperty().name, '===', value).execute();
                 });
 
             },
 
             toDatabaseValue: function (value, options, config) {
 
-                if(_.isString(value)) {
+                if(_.isString(value) || _.isNumber(value)) {
 
-                    return (value) ? value: null;
+                    return (value) ? options.type === 'string' ? _(value).toString() : parseInt(value) : null;
 
                 } else if(value.primaryValue && !options.dbRef) {
 
@@ -102,12 +122,11 @@ define(['altair/facades/declare',
             /**
              * Before we render, we have to populate choices (which means searching a data store for entities)
              *
-             * @param renderer
              * @param template
              * @param context
              * @returns {Deferred}
              */
-            render: function (template, context) {
+            render: function (template, context, options) {
 
                 var entityType = context.options.entity,
                     choices = {};
@@ -118,18 +137,22 @@ define(['altair/facades/declare',
 
                 return this.nexus(entityType).then(function (store) {
 
-                    return store.find().where(context.options.query).execute();
+                    return store.find({
+                        event: context.requestEvent
+                    }).where(context.options.query).execute();
 
                 }).then(function (cursor) {
 
+                    var nameField = context.options.nameField || 'name';
+
                     return cursor.each().step(function (entity) {
-                        choices[entity.primaryValue()] = entity.has('name') ? entity.get('name') : entity.name; //nexus name if no name property exists
+                        choices[entity.primaryValue()] = entity.has(nameField) ? entity.get(nameField) : entity.name; //nexus name if no name property exists
                     });
 
                 }).then(this.hitch(function () {
 
                     context.options.choices = choices;
-                    return this.parent.render(template, context);
+                    return this.parent.render(template, context, options);
 
                 }));
 

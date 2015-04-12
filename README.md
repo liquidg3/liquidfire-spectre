@@ -171,6 +171,24 @@ this.entity('User').then(function (store) {
 
 });
 ```
+
+## Iterating over search results
+```js
+this.entity('User').then(function (store) {
+
+    return store.find().execute();
+
+}).then(function (users) {
+
+    return users.each().step(function (user) {
+
+        console.log(user.get('firstName'), 'is an admin user');
+
+    });
+
+});
+```
+
 ##Custom Statement
 You can customize how a database `Statement` works from a store pretty easily. Here is a real
 world example of a custom `Store` with a custom `Statement`.
