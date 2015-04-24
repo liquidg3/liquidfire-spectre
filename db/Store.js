@@ -228,8 +228,11 @@ define(['altair/facades/declare',
                             } else {
 
                                 tranformed = schema.applyOnProperty(['toDatabaseQueryValue', 'toDatabaseValue', 'noop'], key, value, {
+                                    many: _.isArray(value) //retain any array passed through
+                                }, {
                                     statement: statement,
-                                    store:     this
+                                    store:     this,
+                                    path:      path !== key ? path + '.' + key : path
                                 });
 
                                 lang.setObject(path, tranformed, where);
@@ -244,7 +247,13 @@ define(['altair/facades/declare',
 
                     if (where) {
 
-                        _.each(where, transform, this);
+                        try {
+
+                            _.each(where, transform, this);
+
+                        } catch (err) {
+                            this.err(err);
+                        }
 
                     }
 
