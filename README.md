@@ -237,7 +237,7 @@ define(['altair/facades/declare',
 });
 ```
 
-## Quick REST endpoints using the search model
+## Quick REST endpoints using the `SearchModel`
 When you need to create an endpoint to search entities with all the fancy skip, limit, search term, etc. you can use 
 `liquidfire:Spectre/models/Search` to get very far very fast. Inside your controller, you can:
 

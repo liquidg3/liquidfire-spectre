@@ -74,6 +74,7 @@ define(['altair/facades/declare',
 
                     var results = [],
                         total    = cursor.total(),
+                        count    = cursor.count(),
                         stepping = cursor.each().step(function (entity) {
 
                         results.push(transform(entity));
@@ -84,6 +85,12 @@ define(['altair/facades/declare',
 
                     return this.all({
                         total: total,
+                        count: count,
+                        page: page,
+                        perPage: perPage,
+                        startIndex: page * perPage,
+                        endIndex: page * perPage + count - 1,
+                        totalPages: Math.ceil(total / perPage),
                         results: stepping
                     });
 
