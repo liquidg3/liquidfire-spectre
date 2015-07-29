@@ -30,7 +30,7 @@ define(['altair/facades/declare',
                     type: 'boolean',
                     options: {
                         label: 'Use dbref',
-                         description: 'I will store/load dbrefs instead of id\'s.'
+                        description: 'I will store/load dbrefs instead of id\'s.'
                     }
                 },
                 nameField: {
@@ -38,6 +38,14 @@ define(['altair/facades/declare',
                     options: {
                         label: 'Name field',
                         'default': 'name'
+                    }
+                },
+                populateChoices: {
+                    type: 'boolean',
+                    options: {
+                        label: 'Auto Populate Options',
+                        'default': true,
+                        description: 'Should I query for the dropdown options?'
                     }
                 },
                 type: {
@@ -133,6 +141,11 @@ define(['altair/facades/declare',
 
                 if(!context.options.required) {
                     choices[""] = "";
+                }
+
+                if (context.options.populateChoices === false) {
+                    context.options.choices = [];
+                    return this.parent.render(template, context, options);
                 }
 
                 return this.nexus(entityType).then(function (store) {

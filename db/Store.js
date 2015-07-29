@@ -9,7 +9,6 @@ define(['altair/facades/declare',
             extension = {},
             Store = declare([_DeferredMixin], {
 
-
                 _tableName:    '',
                 _entityName:   '',
                 _entitySchema: null,

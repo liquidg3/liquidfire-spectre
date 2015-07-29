@@ -40,7 +40,7 @@ define(['altair/facades/declare',
             //should we install the extension?
             if (_options.installExtension !== false) {
 
-                this.deferred = this.forge('./foundries/Store').then(function (foundry) {
+                this.deferred = this.forge('foundries/Store').then(function (foundry) {
 
                     this.entityFoundry = foundry;
 

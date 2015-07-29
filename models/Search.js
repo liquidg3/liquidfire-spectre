@@ -89,8 +89,12 @@ define(['altair/facades/declare',
                         page: page,
                         perPage: perPage,
                         startIndex: page * perPage,
-                        endIndex: page * perPage + count - 1,
-                        totalPages: Math.ceil(total / perPage),
+                        endIndex: this.when(count).then(function (count) {
+                            return page * perPage + count - 1;
+                        }),
+                        totalPages: this.when(total).then(function (total) {
+                            return Math.ceil(total / perPage);
+                        }),
                         results: stepping
                     });
 
