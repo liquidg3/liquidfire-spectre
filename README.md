@@ -273,3 +273,28 @@ Example: `/v1/rest/users?perPage=20&page=2&sortField=name&sortDirection=DESC
 - `sortDirection`: ASC or DESC
 - `searchField`: anything passed to `searchValue` will search against this field
 - `searchValue`: the search string
+
+## Using the search model without an event
+When you need to perform a search in a consistent way, the search model is perfect.
+
+```js
+
+var search = this.model('liquidfire:Spectre/models/Search', null, { parent: this });
+
+//no options are required, this list is just to show everything you can do
+search.find('User', {
+    page: 0,
+    perPage: 10,
+    sort: {
+        lastName: 'ASC'
+    },
+    query: {
+        state: 'CO'
+    },
+    //the above is equivalent to the following
+    searchField: 'state',
+    searchValue: 'CO'
+});
+
+
+```

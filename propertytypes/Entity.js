@@ -52,7 +52,7 @@ define(['altair/facades/declare',
                     type:    'select',
                     options: {
                         label:       'Type',
-                        'default': 'string',
+                        'default':   'string',
                         choices: {
                             string:     'String',
                             integer:    'Integer'
