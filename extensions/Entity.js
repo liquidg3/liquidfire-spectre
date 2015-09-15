@@ -30,7 +30,6 @@ define(['altair/facades/declare',
              * @param Module
              * @returns {*}
              */
-
             extend: function (Module) {
 
                 Module.extendOnce({
@@ -53,7 +52,7 @@ define(['altair/facades/declare',
                         }
                         //build the path if it's not a nexus id
                         else {
-                            _p = this.resolvePath(pathUtil.join(base, named.toLowerCase(), named));
+                            _p = (this.parent || this).resolvePath(pathUtil.join(base, named.toLowerCase(), named));
                         }
 
                         var key = this.name.split('/')[0] + '/entities/' + named;
@@ -81,7 +80,20 @@ define(['altair/facades/declare',
                 });
 
                 return this.inherited(arguments);
+            },
+
+            entitySync: function (named, options, config) {
+
+                var entity = this.entity(named, options, config);
+
+                entity.then(function (e) {
+                    entity = e;
+                });
+
+                return entity;
+
             }
+
 
         });
 
