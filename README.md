@@ -80,7 +80,36 @@ define(['altair/facades/declare',
 
 ```
 
-### Using the store to find an entity
+### Using the store to find an entity (async)
+```js
+this.entity('User').then(function (store) {
+
+    //the User store is where you'll find all your users. A store as database agnostic
+    return store.find().where('email', '==', 'test@test.com').execute();
+
+}).then(function (user) {
+
+    if(!user) {
+        throw new Error('user not found!');
+    } else {
+
+        //since entities use apollo/_HasSchemaMixin, the familiar get/set/setValues/getValues/etc. are available.
+        return user.set('firstName', 'tay')
+                   .save(); //every entity is extended with save(), it returns a Promise.
+
+
+    }
+
+}).then(function (user) {
+
+    //the first name is now updated
+    console.log(user.get('firstName'), 'updated');
+
+});
+
+```
+
+### Using the store to find an entity (sync)
 ```js
 this.entity('User').then(function (store) {
 

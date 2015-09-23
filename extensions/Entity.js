@@ -2,12 +2,13 @@ define(['altair/facades/declare',
         'altair/facades/mixin',
         'altair/facades/when',
         'altair/plugins/node!path',
+        'lodash',
         'altair/cartridges/extension/extensions/_Base'],
-
     function (declare,
               mixin,
               when,
               pathUtil,
+              _,
               _Base) {
 
         return declare([_Base], {
@@ -74,25 +75,36 @@ define(['altair/facades/declare',
 
                         }
 
+
                         return d;
+
+                    },
+
+                    /**
+                     * Same as above, but no waiting
+                     *
+                     * @param named
+                     * @param options
+                     * @param config
+                     * @returns {*}
+                     */
+                    entitySync: function (named, options, config) {
+
+                        var entity = this.entity(named, options, config);
+
+                        entity.then(function (e) {
+                            entity = e;
+                        });
+
+                        return entity;
 
                     }
                 });
 
                 return this.inherited(arguments);
-            },
-
-            entitySync: function (named, options, config) {
-
-                var entity = this.entity(named, options, config);
-
-                entity.then(function (e) {
-                    entity = e;
-                });
-
-                return entity;
-
             }
+
+
 
 
         });
