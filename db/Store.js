@@ -217,7 +217,7 @@ define(['altair/facades/declare',
                         if (schema.has(key)) {
 
                             //query can be something like $!== , $<, $>, etc. If that is the case, dive in and loop through that portion
-                            if (_.isObjectLiteral(value) && Object.keys(value)[0][0] === '$') {
+                            if (_.isObjectLiteral(value) && Object.keys(value)[0] && Object.keys(value)[0][0] === '$') {
 
                                 _.each(Object.keys(value), function (_key) {
                                     transform(value[_key], key, all, path + '.' + _key);
