@@ -1,16 +1,18 @@
 define(['altair/facades/declare',
-        'altair/Lifecycle',
-        './extensions/Entity',
-        './extensions/EntitySave',
-        './extensions/EntityDelete',
-        './nexusresolvers/Entity',
-        'lodash',
-        'liquidfire/modules/apollo/mixins/_HasPropertyTypesMixin'
+    'altair/Lifecycle',
+    './extensions/Entity',
+    './extensions/EntitySave',
+    './extensions/EntityDelete',
+    './extensions/EntityControllerUtilities',
+    './nexusresolvers/Entity',
+    'lodash',
+    'liquidfire/modules/apollo/mixins/_HasPropertyTypesMixin'
 ], function (declare,
              Lifecycle,
              EntityExtension,
              EntitySaveExtension,
              EntityDeleteExtension,
+             EntityControllerUtilities,
              EntityResolver,
              _,
              _HasPropertyTypesMixin) {
@@ -44,11 +46,12 @@ define(['altair/facades/declare',
 
                     this.entityFoundry = foundry;
 
-                    var entity      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair),
-                        entitySave  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair),
-                        entityDelete  = _options.entityDeleteExtension || new EntityDeleteExtension(cartridge, cartridge.altair);
+                    var entity                      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair),
+                        entitySave                  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair),
+                        entityControllerUtilities   = _options.entityControllerUtilities || new EntityControllerUtilities(cartridge, cartridge.altair),
+                        entityDelete                = _options.entityDeleteExtension || new EntityDeleteExtension(cartridge, cartridge.altair);
 
-                    return cartridge.addExtensions([entity, entitySave, entityDelete]);
+                    return cartridge.addExtensions([entity, entitySave, entityDelete, entityControllerUtilities]);
 
                 }.bind(this)).then(this.hitch(function () {
                     return this;

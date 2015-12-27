@@ -327,3 +327,33 @@ search.find('User', {
 
 
 ```
+
+## Controller Utilities
+When you are using a controller based solution (Sockets, Alfred, etc.), you find yourself creating/updating/searching/deleting entities
+often. From your controller, you have the following methods.
+
+```js
+
+//type, values[,options]
+this.createEntity('User', {
+    firstName: 'Test',
+    lastName: 'User'
+}, { ... }).then(function (user) { ... }).otherwise(function (err) {
+
+    //cb(_.isArray(err) ? err[0] : err.message || err);
+
+});
+
+//type, id, values[, options]
+this.updateEntity('User', '3', { firstName: 'New Name' }).then(...)
+
+
+//type, options (passthrough to `liquidfire:Spectre/models/Search`)
+this.searchEntities('User', {
+    query: { email: 'test@test.com' }
+    transform: function (entity) { return entity.getSocketValues; }
+}).then(...)
+
+
+
+```
