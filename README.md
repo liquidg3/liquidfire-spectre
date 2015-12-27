@@ -38,6 +38,7 @@ define(['altair/facades/declare',
     });
 
 });
+```
 
 ### 2. Create `entities/user/schema.json` and drop this in:
 
