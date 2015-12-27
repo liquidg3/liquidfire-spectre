@@ -22,7 +22,7 @@ the state of a particular thing (like a user, automobile, whatevs).
 ## How do these work together?
 Let me show you an entity (and entity store) in action.
 
-I'm going to assume you are here: `vendors/{{vendorname}}/modules/{{modulename}}`.
+I'm going to assume you have created an app using [Sockets](https://github.com/liquidg3/liquidfire-sockets) or [Alfred]() or something similar.
 
 ### 1. Create `entities/user/User.js` and drop this in:
 
