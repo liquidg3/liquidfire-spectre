@@ -75,7 +75,9 @@ define(['altair/facades/declare',
                                 throw new Error('Could not find ' + type + ' by id ' + id);
                             }
 
-                            entity.mixin(values);
+                            return entity.mixin(values, null, { methods: [ 'fromFormSubmissionValue', 'toJsValue' ] });
+
+                        }).then(function (entity) {
 
                             return entity.validate();
 
@@ -83,11 +85,7 @@ define(['altair/facades/declare',
 
                             return entity.save();
 
-                        }.bind(this)).otherwise(function (err) {
-
-                            cb(_.isArray(err) ? err[0] : err.message || err);
-
-                        });
+                        }.bind(this));
 
                     },
 

@@ -1,6 +1,6 @@
 {
     "name":               "liquidfire:Spectre",
-    "version":            "0.3.0",
+    "version":            "0.3.1",
     "description":        "Reall cool entities.",
     "events": {
         "will-save-entity": "I'm about to save an entity to a data store.",
