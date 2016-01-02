@@ -300,6 +300,55 @@ search.find('User', {
 
 ```
 
+## Entities in your App
+If you are building an app (through `Alfred` or `Sockets`), you can use the `Lifecycle` class to load all your stores
+right in `startup()`.
+
+```js
+
+{
+    startup: function () {
+
+        //get all our stores ready
+        this.mixin({
+            parts:     this.entity('Part'),
+            sets:      this.entity('Set'),
+            variants:  this.entity('Variant'),
+            vendors:   this.entity('Vendor'),
+            users:     this.entity('User')
+        });
+
+        return this.inherited(arguments);
+    }
+    
+}
+
+```
+
+Then, from one of your `Controllers` you can do the following.
+
+```js
+
+{
+    
+    someAction: function (id, cb) {
+    
+        this.parts.findOne().where('_id', '===', id).execute().then(function (part) {
+        
+            cb(null, part ? part.geSocketValues() : null);
+        
+        }).otherwise(function (err) {
+        
+            cb(err.message || err);
+        
+        });
+    
+    }
+
+}
+
+```
+
 ## Controller Utilities
 When you are using a controller based solution (Sockets, Alfred, etc.), you find yourself creating/updating/searching/deleting entities
 often. From your controller, you have the following methods.
@@ -323,7 +372,7 @@ this.updateEntity('User', '3', { firstName: 'New Name' }).then(...)
 //type, options (passthrough to `liquidfire:Spectre/models/Search`)
 this.searchEntities('User', {
     query: { email: 'test@test.com' }
-    transform: function (entity) { return entity.getSocketValues; }
+    transform: function (entity) { return entity.getSocketValues(); }
 }).then(...)
 
 
