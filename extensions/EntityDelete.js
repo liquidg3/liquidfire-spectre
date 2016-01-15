@@ -13,7 +13,7 @@ define(['altair/facades/declare',
                 Module.extendOnce({
                     store: null,
                     'delete': function (options) {
-                        return this.store.delete(this, options);
+                        return this.store.deleteEntity(this, options);
                     }
                 });
 

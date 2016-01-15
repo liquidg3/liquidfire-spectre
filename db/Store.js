@@ -138,11 +138,7 @@ define(['altair/facades/declare',
 
                 },
 
-                deleteMany: function () {
-                    return this._database['delete'](this._tableName);
-                },
-
-                'delete': function (entity, options) {
+                deleteEntity: function (entity, options) {
 
                     return this.parent.emit('liquidfire:Spectre::will-delete-entity', {
                         entity: entity,

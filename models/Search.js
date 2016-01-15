@@ -41,7 +41,7 @@ define(['altair/facades/declare',
                 this.assertNumeric(perPage, 'You must pass a "perPage" option to search.');
 
                 //max per page
-                perPage = Math.min(perPage, 100);
+                //perPage = Math.min(perPage, 100);
 
                 return this.parent.entity(entityType).then(function (store) {
 
