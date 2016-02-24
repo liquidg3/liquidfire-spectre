@@ -43,6 +43,44 @@ define(['altair/facades/declare',
                 }));
 
 
+            },
+
+            forgeSync: function (path, options, config) {
+
+                var schemaPath = pathUtil.join(path, '..', 'schema.json'),
+                    storePath  = pathUtil.join(path, '../../../stores/', path.split(pathUtil.sep).pop()),
+                    schema,
+                    tableName;
+
+                if (!fs.existsSync(storePath  + '.js')) {
+                    storePath = 'db/Store';
+                }
+
+                //first thing we must do is load the schema and make sure it has a tableName
+                this.parseConfig(schemaPath).then(this.hitch(function (_schema) {
+
+                    if (!_schema.tableName) {
+                        throw new Error('The entity at ' + path + ' needs a tableName in its schema.json. It should be on the same level as properties and be the name of the table/collection where this entity is saved.');
+                    }
+
+                    schema = _schema;
+
+                }));
+
+
+                var _options = mixin({
+                    database:   this.nexus('cartridges/Database'),
+                    schema:     this.nexus('cartridges/Apollo').createSchema(schema),
+                    entityPath: path
+                }, options || {});
+
+                if (!_options.database) {
+                    throw new Error('You must enable the database cartridge for entities to work.');
+                }
+
+
+                return this.parent.forgeSync(storePath, _options, config);
+
             }
 
         });

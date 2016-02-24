@@ -1,6 +1,7 @@
 define(['altair/facades/declare',
     'altair/Lifecycle',
     './extensions/Entity',
+    './extensions/Store',
     './extensions/EntitySave',
     './extensions/EntityDelete',
     './extensions/EntityControllerUtilities',
@@ -10,6 +11,7 @@ define(['altair/facades/declare',
 ], function (declare,
              Lifecycle,
              EntityExtension,
+             StoreExtension,
              EntitySaveExtension,
              EntityDeleteExtension,
              EntityControllerUtilities,
@@ -48,10 +50,11 @@ define(['altair/facades/declare',
 
                     var entity                      = _options.entityExtension || new EntityExtension(cartridge, cartridge.altair),
                         entitySave                  = _options.entitySaveExtension || new EntitySaveExtension(cartridge, cartridge.altair),
+                        store                       = _options.storeExtension || new StoreExtension(cartridge, cartridge.altair),
                         entityControllerUtilities   = _options.entityControllerUtilities || new EntityControllerUtilities(cartridge, cartridge.altair),
                         entityDelete                = _options.entityDeleteExtension || new EntityDeleteExtension(cartridge, cartridge.altair);
 
-                    return cartridge.addExtensions([entity, entitySave, entityDelete, entityControllerUtilities]);
+                    return cartridge.addExtensions([entity, entitySave, entityDelete, entityControllerUtilities, store]);
 
                 }.bind(this)).then(this.hitch(function () {
                     return this;
