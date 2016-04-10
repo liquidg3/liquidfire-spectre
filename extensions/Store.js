@@ -12,6 +12,7 @@ define(['altair/facades/declare',
         return declare([_Base], {
 
             name: 'store',
+            _handles: ['controller', 'app', 'module', 'service'],
             constructor: function (cartridge) {
 
                 if (!cartridge) {

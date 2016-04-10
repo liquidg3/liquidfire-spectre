@@ -43,7 +43,7 @@ define(['altair/facades/declare',
                 //max per page
                 //perPage = Math.min(perPage, 100);
 
-                return this.parent.entity(entityType).then(function (store) {
+                return this.when(this.parent.store(entityType)).then(function (store) {
 
                     //create statement, starting with skip & limit
                     var statement = store.find(findOptions).skip(page * perPage).limit(perPage);
