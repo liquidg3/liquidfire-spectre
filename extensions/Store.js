@@ -100,8 +100,6 @@ define(['altair/facades/declare',
             }
 
 
-
-
         });
 
 
